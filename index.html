@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <title>Mr Pie - An anagram check using prime numbers</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Using prime numbers to check if 2 strings are anagrams. Inspired by https://pbs.twimg.com/media/DU387y3UQAAEBa6.jpg:large.">
+    <meta name="author" content="Derek Pennycuff">
+    <style>
+      label, button {
+        display: block;
+        margin: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <label for="word1">Enter your 1st word: <input type="text" id="word1" name="word1" /></label>
+    <label for="word2">Enter your 2nd word: <input type="text" id="word2" name="word2" /></label>
+    <button id="check">Are these anagrams?</button>
+    <div id="output">Enter words or phrases above and we'll tell you if they are anagrams or not. For example, try "prime" and "Mr. Pie".</div>
+  </body>
+  <script>
+    // Sorted by frequency according to
+    // https://www.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html
+    const assigned_primes = {
+      'E': 2,
+      'T': 3,
+      'A': 5,
+      'O': 7,
+      'I': 11,
+      'N': 13,
+      'S': 17,
+      'R': 19,
+      'H': 23,
+      'D': 29,
+      'L': 31,
+      'U': 37,
+      'C': 41,
+      'M': 43,
+      'F': 47,
+      'Y': 53,
+      'W': 59,
+      'G': 61,
+      'P': 67,
+      'B': 71,
+      'V': 73,
+      'K': 79,
+      'X': 83,
+      'Q': 89,
+      'J': 97,
+      'Z': 101,
+    };
+    function stringToArray(myString) {
+      return Array.from(myString);
+    }
+    // Ignore spaces and other non-alphabet characters
+    // by treating them as 1, the identity value for
+    // multiplication. See:
+    // http://mathworld.wolfram.com/MultiplicativeIdentity.html
+    function charToPrime(myChar) {
+      return assigned_primes[myChar] || 1;
+    }
+    function multiplicativeReducer(accumulator, currentValue) {
+      return accumulator * currentValue;
+    }
+    function stringToProductOfPrimes(myString) {
+      return stringToArray(myString.toUpperCase())
+        .map(charToPrime)
+        .reduce(multiplicativeReducer);
+    }
+    function areAnagrams(s1, s2) {
+      return (stringToProductOfPrimes(s1) === stringToProductOfPrimes(s2));
+    }
+    function outputTemplate(string1, string2, result) {
+      const truthiness = (result ? 'are' : 'are not');
+      return `The words / phrases "${string1}" and "${string2}" ${truthiness} anagrams!`;
+    }
+    function handleCheck(evt) {
+      const v1 = w1.value;
+      const v2 = w2.value;
+      const result = areAnagrams(v1, v2);
+      out.innerHTML = outputTemplate(v1, v2, result);
+    }
+
+    const btn = document.querySelector('#check');
+    const w1 = document.querySelector('#word1');
+    const w2 = document.querySelector('#word2');
+    const out = document.querySelector('#output');
+    btn.addEventListener('click', handleCheck);
+  </script>
+</html>
